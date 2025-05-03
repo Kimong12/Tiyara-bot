@@ -9,7 +9,6 @@ Tiara bot
       margin: 0;
       padding: 0;
     }
-
     body {
       background: linear-gradient(to top, #a0e9ff, #ffffff);
       font-family: 'Segoe UI', sans-serif;
@@ -19,14 +18,12 @@ Tiara bot
       justify-content: flex-start;
       height: 100vh;
     }
-
     #scoreboard {
       margin: 20px;
       font-size: 24px;
       font-weight: bold;
       color: #333;
     }
-
     #game {
       position: relative;
       width: 500px;
@@ -37,7 +34,6 @@ Tiara bot
       overflow: hidden;
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
     }
-
     #ground {
       position: absolute;
       bottom: 0;
@@ -45,7 +41,6 @@ Tiara bot
       height: 40px;
       background: green;
     }
-
     /* Tampilan jurang */
     .gap {
       position: absolute;
@@ -55,7 +50,6 @@ Tiara bot
       background: brown; /* Warna jurang */
       border-radius: 5px;
     }
-
     #character {
       position: absolute;
       bottom: 40px;
@@ -63,14 +57,12 @@ Tiara bot
       width: 50px;
       transition: bottom 0.2s ease;
     }
-
     #controls {
       margin-top: 20px;
       display: flex;
       justify-content: center;
       gap: 20px;
     }
-
     #jumpBtn {
       padding: 8px 20px;
       font-size: 16px;
@@ -80,11 +72,9 @@ Tiara bot
       box-shadow: 0 4px #e0a800;
       cursor: pointer;
     }
-
     #jumpBtn:active {
       transform: translateY(2px);
     }
-
     /* Joystick */
     #joystick {
       position: relative;
@@ -94,7 +84,6 @@ Tiara bot
       border-radius: 50%;
       touch-action: none;
     }
-
     #joystickInner {
       position: absolute;
       top: 15px;
@@ -104,7 +93,6 @@ Tiara bot
       background-color: #333;
       border-radius: 50%;
     }
-
     #gameOver {
       display: none;
       margin-top: 20px;
