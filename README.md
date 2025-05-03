@@ -1,59 +1,234 @@
-<header>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Game Bintang Loncat</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-<!--
-  <<< Author notes: Course header >>>
-  Include a 1280×640 image, course title in sentence case, and a concise description in emphasis.
-  In your repository settings: enable template repository, add your 1280×640 social image, auto delete head branches.
-  Add your open source license, GitHub uses MIT license.
--->
+    body {
+      background: linear-gradient(to top, #a0e9ff, #ffffff);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+    }
 
-# GitHub Pages
+    #scoreboard {
+      margin: 20px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
 
-_Create a site or blog from your GitHub repositories with GitHub Pages._
+    #game {
+      position: relative;
+      width: 500px;
+      height: 300px;
+      background: #fff;
+      border: 4px solid #444;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
 
-</header>
+    #ground {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 40px;
+      background: green;
+    }
 
-<!--
-  <<< Author notes: Step 2 >>>
-  Start this step by acknowledging the previous step.
-  Define terms and link to docs.github.com.
-  Historic note: previous version checked for empty pull request, changed to the correct theme `minima`.
--->
+    /* Tampilan jurang */
+    .gap {
+      position: absolute;
+      bottom: 40px; /* Jurang di bawah sedikit dari tanah */
+      width: 60px;
+      height: 10px;
+      background: brown; /* Warna jurang */
+      border-radius: 5px;
+    }
 
-## Step 2: Configure your site
+    #character {
+      position: absolute;
+      bottom: 40px;
+      left: 100px;
+      width: 50px;
+      transition: bottom 0.2s ease;
+    }
 
-_You turned on GitHub Pages! :tada:_
+    #controls {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
 
-We'll work in a branch, `my-pages`, that I created for you to get this site looking great. :sparkle:
+    #jumpBtn {
+      padding: 8px 20px;
+      font-size: 16px;
+      background: #ffc107;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 4px #e0a800;
+      cursor: pointer;
+    }
 
-Jekyll uses a file titled `_config.yml` to store settings for your site, your theme, and reusable content like your site title and GitHub handle. You can check out the `_config.yml` file on the **Code** tab of your repository.
+    #jumpBtn:active {
+      transform: translateY(2px);
+    }
 
-We need to use a blog-ready theme. For this activity, we will use a theme named "minima".
+    /* Joystick */
+    #joystick {
+      position: relative;
+      width: 70px;
+      height: 70px;
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 50%;
+      touch-action: none;
+    }
 
-### :keyboard: Activity: Configure your site
+    #joystickInner {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      width: 40px;
+      height: 40px;
+      background-color: #333;
+      border-radius: 50%;
+    }
 
-1. Browse to the `_config.yml` file in the `my-pages` branch.
-1. In the upper right corner, open the file editor.
-1. Add a `theme:` set to **minima** so it shows in the `_config.yml` file as below:
-   ```yml
-   theme: minima
-   ```
-1. (optional) You can modify the other configuration variables such as `title:`, `author:`, and `description:` to further customize your site.
-1. Commit your changes.
-1. (optional) Create a pull request to view all the changes you'll make throughout this course. Click the **Pull Requests** tab, click **New pull request**, set `base: main` and `compare:my-pages`.
-1. Wait about 20 seconds then refresh this page (the one you're following instructions from). [GitHub Actions](https://docs.github.com/en/actions) will automatically update to the next step.
+    #gameOver {
+      display: none;
+      margin-top: 20px;
+      font-size: 22px;
+      color: yellow;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
 
-<footer>
+  <div id="scoreboard">Poin: <span id="point">0</span></div>
 
-<!--
-  <<< Author notes: Footer >>>
-  Add a link to get support, GitHub status page, code of conduct, license link.
--->
+  <div id="game">
+    <div id="ground"></div>
+    <div id="gap1" class="gap" style="left: 400px;"></div> <!-- Jurang -->
+    <img id="character" src="Gametiara1.png" alt="Karakter">
+  </div>
 
----
+  <div id="controls">
+    <button id="jumpBtn" onclick="jump()">Lompat!</button>
+    <div id="joystick">
+      <div id="joystickInner"></div>
+    </div>
+  </div>
 
-Get help: [Post in our discussion board](https://github.com/orgs/skills/discussions/categories/github-pages) &bull; [Review the GitHub status page](https://www.githubstatus.com/)
+  <div id="gameOver">Game Over! Segera refresh untuk mengulang.</div>
 
-&copy; 2023 GitHub &bull; [Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md) &bull; [MIT License](https://gh.io/mit)
+  <script>
+    const karakter = document.getElementById("character");
+    const pointText = document.getElementById("point");
+    const joystick = document.getElementById("joystick");
+    const joystickInner = document.getElementById("joystickInner");
+    const gameOverText = document.getElementById("gameOver");
+    const gap = document.getElementById("gap1");
 
-</footer>
+    let poin = 0;
+    let isJumping = false;
+    let isGameOver = false;
+    let moveX = 0;
+    let gameStarted = false;
+
+    function jump() {
+      if (isJumping || isGameOver) return;
+      isJumping = true;
+
+      karakter.style.bottom = "150px";
+      setTimeout(() => {
+        karakter.style.bottom = "40px";
+        isJumping = false;
+      }, 500);
+
+      poin++;
+      pointText.textContent = poin;
+    }
+
+    // Delay 2 detik sebelum mulai game
+    setTimeout(() => {
+      gameStarted = true;
+      moveGap();
+    }, 2000);
+
+    function moveGap() {
+      if (isGameOver) return;
+
+      const currentLeft = parseInt(gap.style.left);
+      gap.style.left = (currentLeft - 2) + "px";
+
+      if (currentLeft < -60) {
+        gap.style.left = "500px";
+      }
+
+      if (gameStarted) {
+        checkDeath();
+      }
+
+      requestAnimationFrame(moveGap);
+    }
+
+    function checkDeath() {
+      const gapLeft = parseInt(gap.style.left);
+      const karakterLeft = parseInt(karakter.style.left);
+      const karakterBottom = parseInt(getComputedStyle(karakter).bottom);
+
+      const diAtasJurang =
+        karakterLeft + 40 > gapLeft &&
+        karakterLeft < gapLeft + 60;
+
+      if (diAtasJurang && karakterBottom <= 42) {
+        gameOver();
+      }
+    }
+
+    function gameOver() {
+      isGameOver = true;
+      gameOverText.style.display = "block";
+    }
+
+    // Joystick
+    joystick.addEventListener("mousedown", e => moveX = e.clientX);
+    joystick.addEventListener("mousemove", e => {
+      if (e.buttons !== 1 || isGameOver) return;
+      const diff = e.clientX - moveX;
+      moveCharacter(diff / 5);
+      moveX = e.clientX;
+    });
+    joystick.addEventListener("touchstart", e => moveX = e.touches[0].clientX);
+    joystick.addEventListener("touchmove", e => {
+      if (isGameOver) return;
+      const diff = e.touches[0].clientX - moveX;
+      moveCharacter(diff / 5);
+      moveX = e.touches[0].clientX;
+    });
+
+    function moveCharacter(diff) {
+      const currentLeft = parseInt(getComputedStyle(karakter).left);
+      let newLeft = currentLeft + diff;
+
+      if (newLeft < 0) newLeft = 0;
+      if (newLeft > 450) newLeft = 450;
+
+      karakter.style.left = `${newLeft}px`;
+    }
+  </script>
+
+</body>
+</html>
